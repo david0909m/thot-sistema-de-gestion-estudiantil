@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Configuración Institucional — THOT{% endblock %}
+{% block page_title %}Identidad Institucional (Marca Blanca){% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center py-3">
+        <h5 class="fw-bold m-0 text-primary"><i class="bi bi-gear-fill me-2"></i> Datos de la Institución Educativa</h5>
+        <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i> Volver al Dashboard
+        </a>
+      </div>
+
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          {% if form.errors %}
+            <div class="alert alert-danger shadow-sm">
+              <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Errores en el formulario:</h6>
+              <ul class="mb-0">
+                {% for field, errors in form.errors.items %}
+                  {% for error in errors %}
+                    <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                  {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <div class="row align-items-center mb-4 p-3 bg-body-tertiary rounded">
+            <div class="col-auto">
+              {% if institucion.logo %}
+                <img src="{{ institucion.logo.url }}" alt="Logo Institución" class="rounded shadow-sm border bg-white p-2" style="width: 90px; height: 90px; object-fit: contain;">
+              {% else %}
+                <div class="avatar bg-primary text-white rounded d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 90px; height: 90px; font-size: 2rem;">
+                  <i class="bi bi-mortarboard-fill"></i>
+                </div>
+              {% endif %}
+            </div>
+            <div class="col">
+              <h5 class="fw-bold m-0">{{ institucion.nombre_institucion }}</h5>
+              <p class="text-body-secondary small mb-0">{{ institucion.lema|default:"Personalización de membretes para reportes oficiales XLSX y boletines." }}</p>
+            </div>
+          </div>
+
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-3"><i class="bi bi-building me-1"></i> Identidad General</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Nombre de la Institución *</label>
+              {{ form.nombre_institucion }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Lema o Eslogan</label>
+              {{ form.lema }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Logotipo Institucional</label>
+              {{ form.logo }}
+              <div class="form-text">Se incrustará automáticamente en los reportes XLSX y cabeceras.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Correo Electrónico Oficial</label>
+              {{ form.correo }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Teléfono de Contacto</label>
+              {{ form.telefono }}
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Dirección de la Institución</label>
+              {{ form.direccion }}
+            </div>
+          </div>
+
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-3"><i class="bi bi-file-earmark-text me-1"></i> Membretes y Pie de Página</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-12">
+              <label class="form-label fw-semibold">Pie de Página Oficial (Boletines y Reportes)</label>
+              {{ form.pie_de_pagina_boletin }}
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary px-4">Cancelar</a>
+            <button type="submit" class="btn btn-thot-primary px-4">
+              <i class="bi bi-check-circle me-1"></i> Guardar Configuración
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

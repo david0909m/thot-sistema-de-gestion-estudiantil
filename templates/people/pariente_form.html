@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} — THOT{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center py-3">
+        <h5 class="fw-bold m-0 text-primary"><i class="bi bi-person-heart me-2"></i> {{ title }}</h5>
+        <a href="{% url 'parientes_list' %}" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i> Volver al Directorio
+        </a>
+      </div>
+
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+
+          {% if form.errors %}
+            <div class="alert alert-danger shadow-sm">
+              <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Errores en el formulario:</h6>
+              <ul class="mb-0">
+                {% for field, errors in form.errors.items %}
+                  {% for error in errors %}
+                    <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                  {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-3"><i class="bi bi-info-circle me-1"></i> Datos Personales y Filiación</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-3">
+              <label class="form-label fw-semibold">Primer Nombre *</label>
+              {{ form.primer_nombre }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold">Segundo Nombre</label>
+              {{ form.segundo_nombre }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold">Primer Apellido *</label>
+              {{ form.primer_apellido }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold">Segundo Apellido</label>
+              {{ form.segundo_apellido }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Cédula de Identidad</label>
+              {{ form.cedula_identidad }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Parentesco / Relación *</label>
+              {{ form.parentesco }}
+            </div>
+          </div>
+
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-3"><i class="bi bi-telephone me-1"></i> Contacto y Ubicación</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Teléfono de Contacto</label>
+              {{ form.telefono }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Correo Electrónico</label>
+              {{ form.email }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Profesión u Ocupación</label>
+              {{ form.profesion }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Lugar de Trabajo</label>
+              {{ form.lugar_trabajo }}
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Dirección Domiciliar</label>
+              {{ form.direccion }}
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'parientes_list' %}" class="btn btn-outline-secondary px-4">
+              Cancelar
+            </a>
+            <button type="submit" class="btn btn-thot-primary px-4">
+              <i class="bi bi-check-circle me-1"></i> {% if is_edit %}Guardar Cambios{% else %}Registrar Familiar{% endif %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

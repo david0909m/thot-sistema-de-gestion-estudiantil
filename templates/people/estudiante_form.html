@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} — THOT{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center py-3">
+        <h5 class="fw-bold m-0 text-primary"><i class="bi bi-person-badge me-2"></i> {{ title }}</h5>
+        <a href="{% if is_edit %}{% url 'estudiante_detail' estudiante.id %}{% else %}{% url 'estudiantes_list' %}{% endif %}" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i> Volver
+        </a>
+      </div>
+
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          {% if form.errors %}
+            <div class="alert alert-danger shadow-sm">
+              <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Errores en el formulario:</h6>
+              <ul class="mb-0">
+                {% for field, errors in form.errors.items %}
+                  {% for error in errors %}
+                    <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                  {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-3"><i class="bi bi-info-circle me-1"></i> Datos de Identificación</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Código Carnet *</label>
+              {{ form.codigo_estudiante }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Cédula / Identificación</label>
+              {{ form.cedula_identidad }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Género *</label>
+              {{ form.genero }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold">Primer Nombre *</label>
+              {{ form.primer_nombre }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold">Segundo Nombre</label>
+              {{ form.segundo_nombre }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold">Primer Apellido *</label>
+              {{ form.primer_apellido }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold">Segundo Apellido</label>
+              {{ form.segundo_apellido }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Fecha de Nacimiento</label>
+              {{ form.fecha_nacimiento }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Estado Civil</label>
+              {{ form.estado_civil }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Religión</label>
+              {{ form.religion }}
+            </div>
+          </div>
+
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-3"><i class="bi bi-geo-alt me-1"></i> Datos Escolares y Logística</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Escolaridad de Origen</label>
+              {{ form.escolaridad }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Ruta de Transporte (Recorrido)</label>
+              {{ form.recorrido }}
+            </div>
+            <div class="col-md-8">
+              <label class="form-label fw-semibold">Fotografía del Alumno</label>
+              {{ form.foto }}
+              <div class="form-text">Formatos permitidos: JPG, PNG, WEBP. Se procesarán automáticamente miniaturas con Pillow.</div>
+            </div>
+            <div class="col-md-4 d-flex align-items-center">
+              <div class="form-check mt-3">
+                {{ form.activo }}
+                <label class="form-check-label fw-semibold ms-2" for="{{ form.activo.id_for_label }}">
+                  Estudiante Activo en el Centro
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% if is_edit %}{% url 'estudiante_detail' estudiante.id %}{% else %}{% url 'estudiantes_list' %}{% endif %}" class="btn btn-outline-secondary px-4">
+              Cancelar
+            </a>
+            <button type="submit" class="btn btn-thot-primary px-4">
+              <i class="bi bi-check-circle me-1"></i> {% if is_edit %}Guardar Cambios{% else %}Registrar Estudiante{% endif %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

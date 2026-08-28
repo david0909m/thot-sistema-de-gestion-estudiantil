@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Niveles Educativos — THOT{% endblock %}
+{% block page_title %}Catálogo de Niveles Educativos{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center py-3">
+    <h5 class="fw-bold m-0 text-primary"><i class="bi bi-layers me-2"></i> Niveles Educativos</h5>
+    <a href="{% url 'nivel_create' %}" class="btn btn-success btn-sm">
+      <i class="bi bi-plus-circle me-1"></i> Nuevo Nivel
+    </a>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover table-striped align-middle m-0">
+        <thead class="table-light">
+          <tr>
+            <th>Orden</th>
+            <th>Código</th>
+            <th>Nombre del Nivel</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for n in niveles %}
+            <tr>
+              <td><span class="badge bg-primary">{{ n.orden }}</span></td>
+              <td><strong><code>{{ n.codigo }}</code></strong></td>
+              <td><strong>{{ n.nombre }}</strong></td>
+              <td>
+                {% if n.activo %}
+                  <span class="badge bg-success">ACTIVO</span>
+                {% else %}
+                  <span class="badge bg-secondary">INACTIVO</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <a href="{% url 'nivel_edit' n.id %}" class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-pencil me-1"></i> Editar
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="text-center text-body-secondary py-4">No se han configurado niveles educativos.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

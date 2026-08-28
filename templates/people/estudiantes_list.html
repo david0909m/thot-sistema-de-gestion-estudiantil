@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Estudiantes — THOT{% endblock %}
+{% block page_title %}Gestión de Estudiantes{% endblock %}
+
+{% block content %}
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-body-tertiary d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+      <h5 class="fw-bold m-0"><i class="bi bi-people-fill me-2 text-primary"></i> Estudiantes Registrados</h5>
+      
+      <form method="get" action="{% url 'estudiantes_list' %}" class="d-flex gap-2 ms-auto">
+        <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="Buscar carnet, nombre..." style="width: 240px;" hx-get="{% url 'estudiantes_list' %}" hx-target="#estudiantesTable" hx-select="#estudiantesTable" hx-trigger="keyup changed delay:300ms">
+        <button type="submit" class="btn btn-sm btn-thot-primary"><i class="bi bi-search"></i> Buscar</button>
+      </form>
+
+      <a href="{% url 'estudiante_create' %}" class="btn btn-success btn-sm">
+        <i class="bi bi-person-plus-fill me-1"></i> Nuevo Estudiante
+      </a>
+    </div>
+
+    <div class="card-body p-0" id="estudiantesTable">
+      <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle m-0">
+          <thead class="table-light">
+            <tr>
+              <th>Código Carnet</th>
+              <th>Nombre Completo</th>
+              <th>Género</th>
+              <th>Cédula</th>
+              <th>Inscrito En</th>
+              <th class="text-end">Expediente</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for est in estudiantes %}
+              <tr>
+                <td><strong>{{ est.codigo_estudiante }}</strong></td>
+                <td>{{ est.get_full_name }}</td>
+                <td><span class="badge bg-secondary">{{ est.get_genero_display }}</span></td>
+                <td>{{ est.cedula_identidad|default:"-" }}</td>
+                <td>
+                  {% for m in est.inscripciones.all %}
+                    <span class="badge bg-info text-dark me-1">{{ m.seccion }}</span>
+                  {% empty %}
+                    <span class="badge bg-light text-dark">Sin Matrícula</span>
+                  {% endfor %}
+                </td>
+                <td class="text-end">
+                  <a href="{% url 'estudiante_detail' est.id %}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-folder2-open me-1"></i> Ver Expediente
+                  </a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6" class="text-center text-body-secondary py-4">No se encontraron estudiantes registrados con el criterio especificado.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

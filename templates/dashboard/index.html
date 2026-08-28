@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Ejecutivo — THOT{% endblock %}
+{% block page_title %}Dashboard Ejecutivo{% endblock %}
+
+{% block content %}
+  <!-- Stats Summary Grid con Bootstrap 5 Cards -->
+  <div class="row g-4 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm stat-card-widget h-100 p-3">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-body-secondary small fw-bold text-uppercase tracking-wider">Estudiantes</span>
+            <h2 class="fw-extrabold m-0 mt-2">{{ stats.total_estudiantes }}</h2>
+          </div>
+          <div class="icon-box bg-primary bg-opacity-10 text-primary">
+            <i class="bi bi-people-fill"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm stat-card-widget h-100 p-3">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-body-secondary small fw-bold text-uppercase tracking-wider">Docentes Activos</span>
+            <h2 class="fw-extrabold m-0 mt-2">{{ stats.total_docentes }}</h2>
+          </div>
+          <div class="icon-box bg-success bg-opacity-10 text-success">
+            <i class="bi bi-person-badge-fill"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm stat-card-widget h-100 p-3">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-body-secondary small fw-bold text-uppercase tracking-wider">Clases / Secciones</span>
+            <h2 class="fw-extrabold m-0 mt-2">{{ stats.total_clases }}</h2>
+          </div>
+          <div class="icon-box bg-warning bg-opacity-10 text-warning">
+            <i class="bi bi-building"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm stat-card-widget h-100 p-3">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-body-secondary small fw-bold text-uppercase tracking-wider">Eventos Auditoría</span>
+            <h2 class="fw-extrabold m-0 mt-2">{{ stats.total_auditorias }}</h2>
+          </div>
+          <div class="icon-box bg-info bg-opacity-10 text-info">
+            <i class="bi bi-shield-check"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Report Generator Card -->
+  <div class="card border-0 shadow-sm mb-4 p-3">
+    <div class="card-body">
+      <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-spreadsheet-fill text-primary me-2"></i> Generador Rápido de Reportes XLSX (Marca Blanca)</h5>
+      <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'descargar_reporte_docentes' %}" class="btn btn-thot-primary">
+          <i class="bi bi-download me-1"></i> Carga Docente (XLSX)
+        </a>
+        <a href="{% url 'reportes_index' %}" class="btn btn-thot-accent">
+          <i class="bi bi-card-checklist me-1"></i> Listados Oficiales (XLSX)
+        </a>
+        <a href="{% url 'reportes_index' %}" class="btn btn-success">
+          <i class="bi bi-mortarboard-fill me-1"></i> Centro de Boletines Oficiales
+        </a>
+        <a href="{% url 'sabana_notas' %}" class="btn btn-outline-primary">
+          <i class="bi bi-grid-3x3-gap me-1"></i> Sábana de Notas Web
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Audit Logs Table -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center py-3">
+      <h5 class="fw-bold m-0"><i class="bi bi-activity me-2"></i> Actividad Reciente de Auditoría (Trazabilidad Global)</h5>
+      <a href="{% url 'auditoria_list' %}" class="btn btn-sm btn-outline-secondary">Ver todo →</a>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle m-0">
+          <thead class="table-light">
+            <tr>
+              <th>Fecha / Hora</th>
+              <th>Usuario</th>
+              <th>Acción</th>
+              <th>Origen</th>
+              <th>Detalles / Objeto</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ev in eventos_recientes %}
+              <tr>
+                <td><small>{{ ev.timestamp|date:"Y-m-d H:i:s" }}</small></td>
+                <td><strong>{{ ev.username_log }}</strong></td>
+                <td><span class="badge bg-primary bg-opacity-15 text-primary border border-primary-subtle">{{ ev.accion }}</span></td>
+                <td><span class="badge bg-secondary">{{ ev.origen }}</span></td>
+                <td><small class="text-body-secondary">{{ ev.descripcion|truncatechars:50 }}</small></td>
+                <td>
+                  {% if ev.exito %}
+                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> EXITOSO</span>
+                  {% else %}
+                    <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i> FALLIDO</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6" class="text-center text-body-secondary py-4">
+                  No hay eventos de auditoría registrados en la bitácora.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

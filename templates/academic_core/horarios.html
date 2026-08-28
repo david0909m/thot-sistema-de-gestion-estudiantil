@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Programación de Horarios — THOT{% endblock %}
+{% block page_title %}Gestor de Horarios por Sección{% endblock %}
+
+{% block content %}
+  <div class="row g-4 mb-4">
+    <!-- Selector de Sección y Programador -->
+    <div class="col-12 col-md-4">
+      <div class="card border-0 shadow-sm p-4 mb-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-filter me-2 text-primary"></i> Seleccionar Sección</h5>
+        <form method="get" action="{% url 'horarios_list' %}">
+          <select name="seccion_id" class="form-select mb-3" onchange="this.form.submit()">
+            {% for sec in secciones %}
+              <option value="{{ sec.id }}" {% if seccion_seleccionada and seccion_seleccionada.id == sec.id %}selected{% endif %}>
+                {{ sec.clase.nombre }} — {{ sec.nombre }}
+              </option>
+            {% empty %}
+              <option value="">No hay secciones</option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+
+      {% if seccion_seleccionada %}
+        <div class="card border-0 shadow-sm p-4">
+          <h5 class="fw-bold mb-3"><i class="bi bi-plus-circle me-2 text-primary"></i> Programar Horario</h5>
+          <form method="post" action="{% url 'horarios_list' %}?seccion_id={{ seccion_seleccionada.id }}">
+            {% csrf_token %}
+            <input type="hidden" name="crear_horario" value="1">
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Materia</label>
+              <select name="materia_id" class="form-select" required>
+                {% for mat in materias_seccion %}
+                  <option value="{{ mat.id }}">{{ mat.nombre }}</option>
+                {% empty %}
+                  <option value="">Sin materias configuradas</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Día de la Semana</label>
+              <select name="dia_semana" class="form-select" required>
+                <option value="1">Lunes</option>
+                <option value="2">Martes</option>
+                <option value="3">Miércoles</option>
+                <option value="4">Jueves</option>
+                <option value="5">Viernes</option>
+                <option value="6">Sábado</option>
+              </select>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label fw-semibold">Inicio</label>
+                <input type="time" name="hora_inicio" class="form-control" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-semibold">Fin</label>
+                <input type="time" name="hora_fin" class="form-control" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Aula / Espacio Físico</label>
+              <input type="text" name="aula" class="form-control" placeholder="Ej: Aula 102">
+            </div>
+
+            <button type="submit" class="btn btn-thot-primary w-100">
+              <i class="bi bi-clock-history me-1"></i> Agregar Horario
+            </button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Rejilla de Horarios -->
+    <div class="col-12 col-md-8">
+      <div class="card border-0 shadow-sm p-4">
+        <h5 class="fw-bold mb-3">
+          <i class="bi bi-calendar-week text-primary me-2"></i> Horario de {{ seccion_seleccionada.clase.nombre|default:"" }} — {{ seccion_seleccionada.nombre|default:"Ninguna" }}
+        </h5>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Día</th>
+                <th>Horario</th>
+                <th>Materia</th>
+                <th>Aula</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for h in horarios %}
+                <tr>
+                  <td><span class="badge bg-primary">{{ h.get_dia_semana_display }}</span></td>
+                  <td><code>{{ h.hora_inicio|time:"H:i" }} - {{ h.hora_fin|time:"H:i" }}</code></td>
+                  <td><strong>{{ h.materia.nombre }}</strong></td>
+                  <td>{{ h.aula|default:"-" }}</td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="4" class="text-center text-body-secondary py-4">Sin entradas de horario programadas para esta sección.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

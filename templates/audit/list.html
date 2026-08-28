@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Auditoría Global — THOT{% endblock %}
+{% block page_title %}Bitácora Global de Auditoría (Trazabilidad){% endblock %}
+
+{% block content %}
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-body-tertiary d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+      <h5 class="fw-bold m-0"><i class="bi bi-shield-check me-2 text-primary"></i> Eventos e Historial de Auditoría</h5>
+      
+      <form method="get" action="{% url 'auditoria_list' %}" class="d-flex gap-2 ms-auto">
+        <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="Buscar usuario, acción, IP..." style="width: 260px;">
+        <button type="submit" class="btn btn-sm btn-thot-primary"><i class="bi bi-search"></i> Buscar</button>
+      </form>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle m-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Fecha y Hora</th>
+              <th>Usuario</th>
+              <th>Acción</th>
+              <th>Origen</th>
+              <th>IP Address</th>
+              <th>Descripción</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ev in eventos %}
+              <tr>
+                <td><code>#{{ ev.id }}</code></td>
+                <td><small>{{ ev.timestamp|date:"Y-m-d H:i:s" }}</small></td>
+                <td><strong>{{ ev.username_log }}</strong></td>
+                <td><span class="badge bg-primary bg-opacity-15 text-primary border border-primary-subtle">{{ ev.accion }}</span></td>
+                <td><span class="badge bg-secondary">{{ ev.origen }}</span></td>
+                <td><small>{{ ev.ip_address|default:"-" }}</small></td>
+                <td><small class="text-body-secondary">{{ ev.descripcion|truncatechars:60 }}</small></td>
+                <td>
+                  {% if ev.exito %}
+                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> ÉXITO</span>
+                  {% else %}
+                    <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i> FALLO</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="8" class="text-center text-body-secondary py-4">No se encontraron eventos de auditoría registrados.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

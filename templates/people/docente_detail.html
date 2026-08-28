@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+
+{% block title %}Expediente Docente: {{ docente.usuario.get_full_name }} — THOT{% endblock %}
+{% block page_title %}Expediente del Docente{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+  <!-- Tarjeta de Perfil Resumida -->
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm text-center p-4">
+      <div class="mb-3">
+        {% if docente.foto %}
+          <img src="{{ docente.foto.url }}" alt="Foto Docente" class="rounded-circle shadow-sm" style="width: 120px; height: 120px; object-fit: cover;">
+        {% else %}
+          <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold mx-auto shadow-sm" style="width: 120px; height: 120px; font-size: 38px;">
+            {{ docente.usuario.first_name|slice:":1" }}{{ docente.usuario.last_name|slice:":1" }}
+          </div>
+        {% endif %}
+      </div>
+      <h5 class="fw-bold m-0">{{ docente.usuario.get_full_name }}</h5>
+      <p class="text-body-secondary mb-2">{{ docente.especialidad|default:"Profesor" }}</p>
+      
+      <div class="mb-3">
+        <span class="badge bg-primary px-3 py-2"><i class="bi bi-person-vcard me-1"></i> {{ docente.codigo_empleado }}</span>
+        {% if docente.usuario.habilitado %}
+          <span class="badge bg-success px-3 py-2 ms-1">ACTIVO</span>
+        {% else %}
+          <span class="badge bg-secondary px-3 py-2 ms-1">INACTIVO</span>
+        {% endif %}
+      </div>
+
+      <ul class="list-group list-group-flush text-start small mb-3">
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span class="text-body-secondary">Usuario:</span>
+          <strong><code>{{ docente.usuario.username }}</code></strong>
+        </li>
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span class="text-body-secondary">Correo:</span>
+          <strong>{{ docente.usuario.email|default:"-" }}</strong>
+        </li>
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span class="text-body-secondary">Teléfono:</span>
+          <strong>{{ docente.telefono|default:"-" }}</strong>
+        </li>
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span class="text-body-secondary">Dirección:</span>
+          <strong>{{ docente.direccion|default:"-" }}</strong>
+        </li>
+      </ul>
+
+      <div class="d-grid gap-2">
+        <a href="{% url 'docente_edit' docente.id %}" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-pencil me-1"></i> Editar Expediente
+        </a>
+        <a href="{% url 'docentes_list' %}" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-arrow-left me-1"></i> Volver a Docentes
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pestañas Detalladas -->
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-body-tertiary p-0 border-bottom">
+        <ul class="nav nav-tabs card-header-tabs m-0 px-3" id="docenteTabs" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link active py-3 fw-semibold" id="materias-tab" data-bs-toggle="tab" data-bs-target="#materias" type="button" role="tab">
+              <i class="bi bi-journal-bookmark me-1 text-primary"></i> Materias Asignadas ({{ materias_titular.count }})
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link py-3 fw-semibold" id="horario-tab" data-bs-toggle="tab" data-bs-target="#horario" type="button" role="tab">
+              <i class="bi bi-clock me-1 text-success"></i> Carga Horaria Semanal
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link py-3 fw-semibold" id="estudios-tab" data-bs-toggle="tab" data-bs-target="#estudios" type="button" role="tab">
+              <i class="bi bi-mortarboard me-1 text-warning"></i> Títulos y Estudios ({{ estudios.count }})
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link py-3 fw-semibold" id="experiencias-tab" data-bs-toggle="tab" data-bs-target="#experiencias" type="button" role="tab">
+              <i class="bi bi-briefcase me-1 text-info"></i> Experiencia Laboral ({{ experiencias.count }})
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card-body p-4">
+        <div class="tab-content" id="docenteTabsContent">
+          <!-- 1. Materias Asignadas -->
+          <div class="tab-pane fade show active" id="materias" role="tabpanel">
+            <h6 class="fw-bold mb-3"><i class="bi bi-book me-1"></i> Asignaturas y Cursos a su Cargo</h6>
+            <div class="table-responsive">
+              <table class="table table-hover table-striped align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Materia</th>
+                    <th>Grado / Clase</th>
+                    <th>Sección</th>
+                    <th class="text-end">Detalle</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for m in materias_titular %}
+                    <tr>
+                      <td><strong>{{ m.nombre }}</strong></td>
+                      <td>{{ m.clase.nombre }}</td>
+                      <td><span class="badge bg-info text-dark">{{ m.seccion.nombre }}</span></td>
+                      <td class="text-end">
+                        <a href="{% url 'materia_detail' m.id %}" class="btn btn-sm btn-outline-primary">
+                          <i class="bi bi-eye"></i> Ver Materia
+                        </a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="4" class="text-center text-body-secondary py-3">No tiene materias asignadas actualmente.</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 2. Carga Horaria -->
+          <div class="tab-pane fade" id="horario" role="tabpanel">
+            <h6 class="fw-bold mb-3"><i class="bi bi-calendar-week me-1"></i> Horario Semanal de Clases</h6>
+            <div class="table-responsive">
+              <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Día</th>
+                    <th>Hora</th>
+                    <th>Materia</th>
+                    <th>Sección</th>
+                    <th>Aula</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for h in horarios %}
+                    <tr>
+                      <td><span class="badge bg-primary">{{ h.get_dia_semana_display }}</span></td>
+                      <td><strong>{{ h.hora_inicio|time:"H:i" }} - {{ h.hora_fin|time:"H:i" }}</strong></td>
+                      <td>{{ h.materia.nombre }}</td>
+                      <td>{{ h.materia.seccion.nombre|default:"Sin Sección" }}</td>
+                      <td>{{ h.aula|default:"Aula Regular" }}</td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="5" class="text-center text-body-secondary py-3">Sin bloques horarios programados.</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 3. Títulos y Estudios -->
+          <div class="tab-pane fade" id="estudios" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="fw-bold m-0"><i class="bi bi-award me-1"></i> Títulos y Grados Académicos</h6>
+              <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalNuevoEstudio">
+                <i class="bi bi-plus-circle me-1"></i> Agregar Título
+              </button>
+            </div>
+
+            <ul class="list-group list-group-flush">
+              {% for est in estudios %}
+                <li class="list-group-item px-0 py-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h6 class="fw-bold m-0 text-primary">{{ est.titulo }}</h6>
+                      <small class="text-body-secondary"><i class="bi bi-building me-1"></i> {{ est.institucion }}</small>
+                    </div>
+                    {% if est.fecha_obtencion %}
+                      <span class="badge bg-light text-dark border">{{ est.fecha_obtencion|date:"Y-m-d" }}</span>
+                    {% endif %}
+                  </div>
+                </li>
+              {% empty %}
+                <p class="text-body-secondary py-3 m-0">No se han registrado títulos o certificados.</p>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <!-- 4. Experiencia Laboral -->
+          <div class="tab-pane fade" id="experiencias" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="fw-bold m-0"><i class="bi bi-buildings me-1"></i> Trayectoria y Experiencia Laboral</h6>
+              <button class="btn btn-sm btn-outline-info text-dark" data-bs-toggle="modal" data-bs-target="#modalNuevaExperiencia">
+                <i class="bi bi-plus-circle me-1"></i> Agregar Experiencia
+              </button>
+            </div>
+
+            <ul class="list-group list-group-flush">
+              {% for exp in experiencias %}
+                <li class="list-group-item px-0 py-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h6 class="fw-bold m-0 text-primary">{{ exp.cargo }}</h6>
+                      <small class="text-body-secondary"><i class="bi bi-briefcase me-1"></i> {{ exp.institucion }}</small>
+                    </div>
+                    <span class="badge bg-light text-dark border">
+                      {{ exp.fecha_inicio|date:"Y" }} - {% if exp.fecha_fin %}{{ exp.fecha_fin|date:"Y" }}{% else %}Presente{% endif %}
+                    </span>
+                  </div>
+                </li>
+              {% empty %}
+                <p class="text-body-secondary py-3 m-0">No se ha registrado experiencia laboral previa.</p>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Agregar Título -->
+<div class="modal fade" id="modalNuevoEstudio" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'docente_estudio_add' docente.id %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold"><i class="bi bi-mortarboard me-2 text-warning"></i> Agregar Título / Grado</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Título o Certificado *</label>
+            {{ form_estudio.titulo }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Institución Educativa *</label>
+            {{ form_estudio.institucion }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Fecha de Obtención</label>
+            {{ form_estudio.fecha_obtencion }}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-thot-primary">Guardar Título</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Agregar Experiencia -->
+<div class="modal fade" id="modalNuevaExperiencia" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'docente_experiencia_add' docente.id %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold"><i class="bi bi-briefcase me-2 text-info"></i> Agregar Experiencia Laboral</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Cargo o Puesto *</label>
+            {{ form_experiencia.cargo }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Institución o Empresa *</label>
+            {{ form_experiencia.institucion }}
+          </div>
+          <div class="row g-2">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold">Fecha Inicio *</label>
+              {{ form_experiencia.fecha_inicio }}
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold">Fecha Fin</label>
+              {{ form_experiencia.fecha_fin }}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-thot-primary">Guardar Experiencia</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Ficha Médica: {{ estudiante.get_full_name }} — THOT{% endblock %}
+{% block page_title %}Ficha Médica y Salud Estudiantil{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-body-tertiary d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+        <div>
+          <h5 class="fw-bold m-0 text-primary"><i class="bi bi-heart-pulse-fill me-2 text-danger"></i> Ficha Médica y de Salud</h5>
+          <small class="text-body-secondary">Estudiante: <strong>{{ estudiante.get_full_name }}</strong> (<code>{{ estudiante.codigo_estudiante }}</code>)</small>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="{% url 'estudiante_detail' estudiante.id %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-person-lines-fill me-1"></i> Expediente
+          </a>
+          <button onclick="window.print()" class="btn btn-sm btn-outline-primary d-print-none">
+            <i class="bi bi-printer me-1"></i> Imprimir Ficha
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+
+          {% if form.errors %}
+            <div class="alert alert-danger shadow-sm">
+              <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Errores en el formulario:</h6>
+              <ul class="mb-0">
+                {% for field, errors in form.errors.items %}
+                  {% for error in errors %}
+                    <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                  {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <div class="row g-3 mb-4 align-items-center p-3 bg-body-tertiary rounded">
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-danger"><i class="bi bi-droplet-fill me-1"></i> Tipo de Sangre y Factor RH</label>
+              {{ form.tipo_sangre }}
+            </div>
+            <div class="col-md-6">
+              <div class="form-check mt-3">
+                {{ form.autoriza_traslado_hospital }}
+                <label class="form-check-label fw-bold text-primary ms-2" for="{{ form.autoriza_traslado_hospital.id_for_label }}">
+                  Autoriza traslado hospitalario inmediato en caso de emergencia
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-3"><i class="bi bi-bandaid me-1"></i> Antecedentes Clínicos y Alergias</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-12">
+              <label class="form-label fw-semibold">Alergias a Medicamentos o Alimentos</label>
+              {{ form.alergias }}
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Padecimientos y Enfermedades Crónicas</label>
+              {{ form.padecimientos_cronicos }}
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Medicamentos de Uso Permanente / Horarios de Administración</label>
+              {{ form.medicamentos_permanentes }}
+            </div>
+          </div>
+
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-3"><i class="bi bi-shield-plus me-1"></i> Póliza de Seguro y Contacto de Emergencia</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Compañía de Seguro Médico</label>
+              {{ form.seguro_medico }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Número de Póliza / Carnet</label>
+              {{ form.numero_poliza }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Contacto de Emergencia Médica (Nombre)</label>
+              {{ form.contacto_emergencia_nombre }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Teléfono de Emergencia Médica (24/7)</label>
+              {{ form.contacto_emergencia_telefono }}
+            </div>
+          </div>
+
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-3"><i class="bi bi-info-circle me-1"></i> Restricciones y Observaciones</h6>
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Restricciones para Educación Física, Deportes o Dieta</label>
+            {{ form.observaciones }}
+          </div>
+
+          <hr class="my-4">
+
+          <div class="d-flex justify-content-end gap-2 d-print-none">
+            <a href="{% url 'estudiante_detail' estudiante.id %}" class="btn btn-outline-secondary px-4">Volver</a>
+            <button type="submit" class="btn btn-thot-primary px-4">
+              <i class="bi bi-check-circle me-1"></i> Guardar Ficha Médica
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

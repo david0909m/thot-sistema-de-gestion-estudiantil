@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Mensajería Interna — THOT{% endblock %}
+{% block page_title %}Bandeja de Mensajes Internos{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="fw-bold m-0"><i class="bi bi-envelope-fill text-primary me-2"></i> Mensajes del Sistema</h5>
+    <button type="button" class="btn btn-thot-primary" data-bs-toggle="modal" data-bs-target="#mensajeModal">
+      <i class="bi bi-pencil-square me-1"></i> Redactar Mensaje
+    </button>
+  </div>
+
+  <!-- Modal Redactar Mensaje -->
+  <div class="modal fade" id="mensajeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form method="post" action="{% url 'mensajes_inbox' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="enviar_mensaje" value="1">
+          
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Redactar Mensaje Interno</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Destinatario</label>
+              <select name="destinatario_id" class="form-select" required>
+                {% for u in usuarios %}
+                  <option value="{{ u.id }}">{{ u.get_full_name|default:u.username }} ({{ u.username }})</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Asunto</label>
+              <input type="text" name="asunto" class="form-control" placeholder="Ej: Aviso importante sobre actividades" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Mensaje</label>
+              <textarea name="cuerpo" class="form-control" rows="4" required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Adjunto (Opcional)</label>
+              <input type="file" name="archivo_adjunto" class="form-control">
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-thot-primary">Enviar Mensaje</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm p-4">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle m-0">
+        <thead class="table-light">
+          <tr>
+            <th>Fecha y Hora</th>
+            <th>Remitente</th>
+            <th>Ámbito</th>
+            <th>Asunto</th>
+            <th>Cuerpo / Contenido</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in mensajes_recibidos %}
+            <tr {% if not m.leido and m.destinatario == request.user %}class="table-primary"{% endif %}>
+              <td><small class="text-body-secondary">{{ m.fecha_envio|date:"d/m/Y H:i" }}</small></td>
+              <td><strong>{{ m.remitente.get_full_name|default:m.remitente.username }}</strong></td>
+              <td><span class="badge bg-info text-dark">{{ m.get_ambito_destinatario_display }}</span></td>
+              <td>
+                <strong>{{ m.asunto }}</strong>
+                {% if m.archivo_adjunto %}
+                  <i class="bi bi-paperclip text-primary ms-1" title="Contiene archivo adjunto"></i>
+                {% endif %}
+              </td>
+              <td>{{ m.cuerpo|truncatewords:10 }}</td>
+              <td class="text-end">
+                <a href="{% url 'mensaje_detail' m.id %}" class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-envelope-open me-1"></i> Leer
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6" class="text-center text-body-secondary py-4">No hay mensajes en la bandeja de entrada.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

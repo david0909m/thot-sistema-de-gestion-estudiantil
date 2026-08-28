@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Centro de Reportes — THOT{% endblock %}
+{% block page_title %}Centro de Reportes Institucionales de Marca Blanca (Excel XLSX){% endblock %}
+
+{% block content %}
+  <div class="row g-4">
+    <!-- 1. Boletín Oficial Estudiantil -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm h-100 p-4">
+        <div class="brand-logo-icon mb-3" style="width: 50px; height: 50px; font-size: 1.5rem;">📊</div>
+        <h5 class="fw-bold">Boletín Oficial</h5>
+        <p class="text-body-secondary small">Descarga el boletín de calificaciones con membrete institucional.</p>
+        
+        <form method="get" action="{% url 'descargar_boletin' %}" class="mt-auto">
+          <div class="mb-3">
+            <select name="estudiante_id" class="form-select form-select-sm" required>
+              <option value="">-- Seleccionar Alumno --</option>
+              {% for e in estudiantes %}
+                <option value="{{ e.id }}">{{ e.codigo_estudiante }} — {{ e.get_full_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-sm btn-thot-primary w-100">
+            <i class="bi bi-file-earmark-excel me-1"></i> Descargar XLSX
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 2. Listado Oficial por Sección -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm h-100 p-4">
+        <div class="brand-logo-icon mb-3" style="width: 50px; height: 50px; font-size: 1.5rem;">📋</div>
+        <h5 class="fw-bold">Listado por Sección</h5>
+        <p class="text-body-secondary small">Descarga la nómina oficial de alumnos por grado y sección.</p>
+
+        <form method="get" action="{% url 'descargar_listado' %}" class="mt-auto">
+          <div class="mb-2">
+            <select name="clase_id" class="form-select form-select-sm" required>
+              <option value="">-- Seleccionar Clase --</option>
+              {% for c in clases %}
+                <option value="{{ c.id }}">{{ c.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <select name="seccion_id" class="form-select form-select-sm">
+              <option value="">Todas las Secciones</option>
+              {% for s in secciones %}
+                <option value="{{ s.id }}">{{ s.clase.nombre }} — {{ s.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-sm btn-thot-primary w-100">
+            <i class="bi bi-file-earmark-excel me-1"></i> Descargar XLSX
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 3. Carga Académica Docente -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm h-100 p-4">
+        <div class="brand-logo-icon mb-3" style="width: 50px; height: 50px; font-size: 1.5rem;">👨‍🏫</div>
+        <h5 class="fw-bold">Carga Docente</h5>
+        <p class="text-body-secondary small">Resumen de docentes y cantidad de materias asignadas.</p>
+
+        <div class="mt-auto">
+          <a href="{% url 'descargar_reporte_docentes' %}" class="btn btn-sm btn-thot-primary w-100">
+            <i class="bi bi-file-earmark-excel me-1"></i> Descargar XLSX
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Estadísticas de Aprobación por Bloque -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm h-100 p-4">
+        <div class="brand-logo-icon mb-3" style="width: 50px; height: 50px; font-size: 1.5rem;">📈</div>
+        <h5 class="fw-bold">Estadísticas por Grado</h5>
+        <p class="text-body-secondary small">Métricas de porcentaje de aprobación y reprobación por bloque.</p>
+
+        <div class="mt-auto">
+          <a href="{% url 'descargar_reporte_estadisticas' %}" class="btn btn-sm btn-thot-primary w-100">
+            <i class="bi bi-file-earmark-excel me-1"></i> Descargar XLSX
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,128 @@
+/* ==========================================================================
+   SISTEMA DE DISEÑO THOT — BOOTSTRAP 5 CUSTOM OVERRIDES & DARK MODE
+   Preserva la paleta de colores institucional, modo nocturno y estetizado.
+   ========================================================================== */
+
+:root {
+  --thot-primary: #1f4e79;
+  --thot-primary-hover: #163756;
+  --thot-accent: #0284c7;
+  --thot-success: #10b981;
+  --thot-warning: #f59e0b;
+  --thot-danger: #ef4444;
+}
+
+/* Personalización de colores Bootstrap */
+.bg-thot-primary {
+  background-color: var(--thot-primary) !important;
+}
+
+.text-thot-primary {
+  color: var(--thot-primary) !important;
+}
+
+.btn-thot-primary {
+  background-color: var(--thot-primary);
+  border-color: var(--thot-primary);
+  color: #ffffff;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-thot-primary:hover {
+  background-color: var(--thot-primary-hover);
+  border-color: var(--thot-primary-hover);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.btn-thot-accent {
+  background-color: var(--thot-accent);
+  border-color: var(--thot-accent);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.btn-thot-accent:hover {
+  background-color: #0369a1;
+  border-color: #0369a1;
+  color: #ffffff;
+}
+
+/* Marca e Iconos de Identidad */
+.brand-logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--thot-primary), var(--thot-accent));
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.25rem;
+}
+
+/* Comportamiento del Drawer: Desplegado por defecto en escritorio, minimizable */
+@media (min-width: 992px) {
+  #appDrawer {
+    width: 260px !important;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease !important;
+  }
+  
+  body.sidebar-collapsed #appDrawer {
+    margin-left: -260px !important;
+    opacity: 0;
+  }
+}
+
+#content {
+  width: 100%;
+  min-height: 100vh;
+  transition: all 0.3s ease;
+}
+
+/* Glassmorphism Login Background */
+.login-bg {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top left, #1f4e79, #0f172a);
+  padding: 1.5rem;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1.25rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+}
+
+[data-bs-theme="dark"] .glass-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Animaciones y Tarjetas de Estadísticas */
+.stat-card-widget {
+  border-radius: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card-widget:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
+}
+
+.icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}

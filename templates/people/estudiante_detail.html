@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block title %}Expediente — {{ estudiante.get_full_name }} — THOT{% endblock %}
+{% block page_title %}Expediente Estudiantil 360°{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+  <!-- Ficha de Datos Personales y Fotografía -->
+  <div class="col-12 col-lg-4">
+    <div class="card border-0 shadow-sm text-center p-4">
+      <div class="position-relative d-inline-block mx-auto mb-3">
+        {% if estudiante.foto_thumb %}
+          <img src="{{ estudiante.foto_thumb.url }}" alt="Foto Estudiante" class="rounded-circle shadow-sm border" style="width: 110px; height: 110px; object-fit: cover;">
+        {% elif estudiante.foto %}
+          <img src="{{ estudiante.foto.url }}" alt="Foto Estudiante" class="rounded-circle shadow-sm border" style="width: 110px; height: 110px; object-fit: cover;">
+        {% else %}
+          <div class="avatar mx-auto rounded-circle d-flex align-items-center justify-content-center bg-primary text-white fw-bold shadow-sm" style="width: 110px; height: 110px; font-size: 2.5rem;">
+            {{ estudiante.primer_nombre|slice:":1" }}{{ estudiante.primer_apellido|slice:":1" }}
+          </div>
+        {% endif %}
+      </div>
+
+      <h4 class="fw-bold m-0">{{ estudiante.get_full_name }}</h4>
+      <p class="text-body-secondary small mb-2">Carnet: <strong>{{ estudiante.codigo_estudiante }}</strong></p>
+      
+      <div class="mb-3">
+        {% if estudiante.retirado %}
+          <span class="badge bg-danger py-2 px-3"><i class="bi bi-x-circle me-1"></i> ESTUDIANTE RETIRADO</span>
+        {% else %}
+          <span class="badge bg-success py-2 px-3"><i class="bi bi-check-circle me-1"></i> ESTUDIANTE ACTIVO</span>
+        {% endif %}
+      </div>
+
+      <div class="d-grid gap-2 mb-3">
+        <a href="{% url 'boletin_web' estudiante.id %}" class="btn btn-primary btn-sm">
+          <i class="bi bi-file-earmark-text me-1"></i> Ver Boletín Oficial
+        </a>
+        <a href="{% url 'ficha_medica' estudiante.id %}" class="btn btn-outline-danger btn-sm">
+          <i class="bi bi-heart-pulse-fill me-1"></i> Ficha Médica y Salud
+        </a>
+        <a href="{% url 'estudiante_edit' estudiante.id %}" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-pencil me-1"></i> Editar Expediente
+        </a>
+      </div>
+
+      <!-- Formulario Carga de Fotografía -->
+      <form method="post" action="{% url 'estudiante_detail' estudiante.id %}" enctype="multipart/form-data" class="mb-3">
+        {% csrf_token %}
+        <div class="input-group input-group-sm">
+          <input type="file" name="nueva_foto" class="form-control" accept="image/*" required>
+          <button type="submit" class="btn btn-outline-primary"><i class="bi bi-upload"></i> Subir Foto</button>
+        </div>
+        <small class="text-body-secondary d-block mt-1" style="font-size: 0.75rem;">Procesamiento automático Pillow (600x800, 375x500, 75x100)</small>
+      </form>
+
+      <ul class="list-group list-group-flush text-start small">
+        <li class="list-group-item d-flex justify-content-between px-0">
+          <span class="text-body-secondary">Género:</span>
+          <strong>{{ estudiante.get_genero_display }}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between px-0">
+          <span class="text-body-secondary">Cédula:</span>
+          <strong>{{ estudiante.cedula_identidad|default:"-" }}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between px-0">
+          <span class="text-body-secondary">Fecha Nacimiento:</span>
+          <strong>{{ estudiante.fecha_nacimiento|date:"Y-m-d"|default:"-" }}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between px-0">
+          <span class="text-body-secondary">Estado Civil:</span>
+          <strong>{{ estudiante.estado_civil|default:"-" }}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between px-0">
+          <span class="text-body-secondary">Religión:</span>
+          <strong>{{ estudiante.religion|default:"-" }}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between px-0">
+          <span class="text-body-secondary">Ruta Transporte:</span>
+          <strong>{{ estudiante.recorrido|default:"-" }}</strong>
+        </li>
+        {% if estudiante.retirado %}
+          <li class="list-group-item bg-light text-danger px-0">
+            <div><strong>Fecha Retiro:</strong> {{ estudiante.fecha_retiro|date:"Y-m-d" }}</div>
+            <div><strong>Motivo:</strong> {{ estudiante.motivo_retiro }}</div>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- Ficha Médica Confidencial -->
+    <div class="card border-0 shadow-sm mt-4 p-3">
+      <h6 class="fw-bold mb-2 text-danger"><i class="bi bi-heart-pulse-fill me-2"></i> Ficha Médica Confidencial</h6>
+      {% if ficha_medica %}
+        <div class="small">
+          <div><strong>Tipo de Sangre:</strong> {{ ficha_medica.tipo_sangre|default:"N/A" }}</div>
+          <div><strong>Alergias:</strong> {{ ficha_medica.alergias|default:"Ninguna" }}</div>
+          <div><strong>Padecimientos Crónicos:</strong> {{ ficha_medica.padecimientos_cronicos|default:"Ninguno" }}</div>
+          <div><strong>Medicamentos Permanentes:</strong> {{ ficha_medica.medicamentos_permanentes|default:"Ninguno" }}</div>
+          <div><strong>Contacto de Emergencia:</strong> {{ ficha_medica.contacto_emergencia_nombre|default:"N/A" }} — {{ ficha_medica.contacto_emergencia_telefono|default:"N/A" }}</div>
+        </div>
+      {% else %}
+        <small class="text-body-secondary">No hay ficha médica guardada.</small>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Pestañas e Historial Académico -->
+  <div class="col-12 col-lg-8">
+    <div class="card border-0 shadow-sm p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold m-0"><i class="bi bi-mortarboard-fill text-primary me-2"></i> Historial de Matrículas</h5>
+        {% if not estudiante.retirado %}
+          <a href="{% url 'matricular_estudiante' estudiante.id %}" class="btn btn-sm btn-success">
+            <i class="bi bi-plus-circle me-1"></i> Nueva Matrícula
+          </a>
+        {% endif %}
+      </div>
+      
+      <div class="table-responsive mb-4">
+        <table class="table table-hover table-striped align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Período Lectivo</th>
+              <th>Clase / Grado</th>
+              <th>Sección</th>
+              <th>Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in matriculas %}
+              <tr>
+                <td><strong>{{ m.periodo.nombre }}</strong></td>
+                <td>{{ m.clase.nombre }}</td>
+                <td><span class="badge bg-primary">{{ m.seccion.nombre }}</span></td>
+                <td>
+                  {% if m.estado == 'INSCRITO' %}
+                    <span class="badge bg-success">INSCRITO</span>
+                  {% elif m.estado == 'TRASLADADO' %}
+                    <span class="badge bg-warning text-dark">TRASLADADO</span>
+                  {% elif m.estado == 'RETIRADO' %}
+                    <span class="badge bg-danger">RETIRADO</span>
+                  {% else %}
+                    <span class="badge bg-secondary">{{ m.estado }}</span>
+                  {% endif %}
+                </td>
+                <td class="text-end">
+                  {% if not estudiante.retirado and m.estado == 'INSCRITO' %}
+                    <button type="button" class="btn btn-sm btn-outline-warning me-1" data-bs-toggle="modal" data-bs-target="#trasladoModal{{ m.id }}">
+                      <i class="bi bi-arrow-left-right me-1"></i> Trasladar
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#retiroModal{{ m.id }}">
+                      <i class="bi bi-person-x me-1"></i> Retirar
+                    </button>
+                  {% else %}
+                    <span class="text-body-secondary small">Sin acciones</span>
+                  {% endif %}
+                </td>
+              </tr>
+
+              <!-- Modal de Traslado de Sección -->
+              <div class="modal fade" id="trasladoModal{{ m.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <form method="post" action="{% url 'estudiante_detail' estudiante.id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="matricula_id" value="{{ m.id }}">
+                      <div class="modal-header">
+                        <h5 class="modal-title fw-bold">Traslado de Sección</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body text-start">
+                        <p class="small text-body-secondary">
+                          Seleccione la nueva sección destino para el estudiante dentro de la clase actual.
+                        </p>
+                        <div class="mb-3">
+                          <label class="form-label fw-semibold">Sección Destino</label>
+                          <select name="nueva_seccion_id" class="form-select" required>
+                            {% for sec in secciones_disponibles %}
+                              <option value="{{ sec.id }}">{{ sec.clase.nombre }} — {{ sec.nombre }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning">Confirmar Traslado</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Modal de Retiro de Estudiante -->
+              <div class="modal fade" id="retiroModal{{ m.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <form method="post" action="{% url 'estudiante_detail' estudiante.id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="matricula_id" value="{{ m.id }}">
+                      <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Retirar Estudiante</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body text-start">
+                        <p class="small text-body-secondary">
+                          Esta acción marcará al estudiante <strong>{{ estudiante.get_full_name }}</strong> como RETIRADO del colegio.
+                        </p>
+                        <div class="mb-3">
+                          <label class="form-label fw-semibold">Motivo del Retiro</label>
+                          <textarea name="motivo_retiro" class="form-control" rows="3" placeholder="Ej: Cambio de residencia familiar" required></textarea>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Confirmar Retiro</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% empty %}
+              <tr><td colspan="5" class="text-center text-body-secondary py-3">Sin matrículas registradas.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold m-0"><i class="bi bi-people me-2 text-primary"></i> Familiares y Responsables</h5>
+        <a href="{% url 'asignar_responsable' estudiante.id %}" class="btn btn-sm btn-outline-primary">
+          <i class="bi bi-person-plus me-1"></i> Asignar Familiar
+        </a>
+      </div>
+
+      <ul class="list-group mb-4">
+        {% for r in responsables %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ r.pariente.get_full_name }}</strong> <span class="badge bg-secondary ms-1">{{ r.pariente.get_parentesco_display }}</span>
+              <div class="small text-body-secondary">
+                <i class="bi bi-telephone me-1"></i> Tel: {{ r.pariente.telefono|default:"N/A" }} | 
+                <i class="bi bi-envelope me-1"></i> {{ r.pariente.email|default:"Sin email" }}
+              </div>
+            </div>
+            <div>
+              {% if r.es_representante_legal %}<span class="badge bg-primary me-1">REPRESENTANTE LEGAL</span>{% endif %}
+              {% if r.es_responsable_financiero %}<span class="badge bg-success">RESP. FINANCIERO</span>{% endif %}
+            </div>
+          </li>
+        {% empty %}
+          <li class="list-group-item text-body-secondary py-3">No existen familiares o tutores asignados a este estudiante.</li>
+        {% endfor %}
+      </ul>
+
+      <h5 class="fw-bold mb-3"><i class="bi bi-shield-exclamation me-2 text-warning"></i> Incidencias Disciplinarias Registradas</h5>
+      <ul class="list-group">
+        {% for inc in incidencias %}
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div>
+              <span class="badge bg-{% if inc.tipo_incidencia == 'LEVE' %}secondary{% elif inc.tipo_incidencia == 'GRAVE' %}danger{% else %}info text-dark{% endif %} me-2">
+                {{ inc.tipo_incidencia }}
+              </span>
+              <strong>{{ inc.descripcion }}</strong>
+              {% if inc.sancion %}<div class="small text-danger mt-1"><strong>Sanción:</strong> {{ inc.sancion }}</div>{% endif %}
+            </div>
+            <small class="text-body-secondary">{{ inc.fecha|date:"Y-m-d" }}</small>
+          </li>
+        {% empty %}
+          <li class="list-group-item text-body-secondary py-3">No registra faltas ni incidencias.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

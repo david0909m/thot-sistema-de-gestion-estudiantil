@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Materia — {{ materia.nombre }}{% endblock %}
+{% block page_title %}Edición de Materia con Control de Concurrencia{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-7">
+      <div class="card border-0 shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="fw-bold m-0"><i class="bi bi-journal-bookmark-fill text-primary me-2"></i> {{ materia.nombre }}</h4>
+          <span class="badge bg-info text-dark">Versión Bloqueo: {{ materia.lock_version }}</span>
+        </div>
+        <p class="text-body-secondary small mb-4">
+          Clase: <strong>{{ materia.clase.nombre }}</strong> | Asignatura: <strong>{{ materia.asignatura.nombre }}</strong>
+        </p>
+
+        <form method="post" action="{% url 'materia_detail' materia.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="lock_version" value="{{ materia.lock_version }}">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre de la Materia</label>
+            <input type="text" name="nombre" value="{{ materia.nombre }}" class="form-control" required>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Docente Titular Asignado</label>
+            <select name="docente_id" class="form-select">
+              <option value="">-- Sin Docente Asignado --</option>
+              {% for d in docentes %}
+                <option value="{{ d.id }}" {% if materia.docente_id == d.id %}selected{% endif %}>
+                  {{ d.get_full_name|default:d.username }} ({{ d.username }})
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'clases_list' %}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-thot-primary">
+              <i class="bi bi-save me-1"></i> Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Mensaje: {{ mensaje.asunto }} — THOT{% endblock %}
+{% block page_title %}Lectura de Mensaje Interno{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center py-3">
+        <h5 class="fw-bold m-0 text-primary">
+          <i class="bi bi-envelope-open-fill me-2"></i> {{ mensaje.asunto }}
+        </h5>
+        <a href="{% url 'mensajes_inbox' %}" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i> Volver a la Bandeja
+        </a>
+      </div>
+
+      <div class="card-body p-4">
+        <div class="row g-3 mb-4 p-3 bg-body-tertiary rounded align-items-center">
+          <div class="col-md-6">
+            <small class="text-body-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">De (Remitente):</small>
+            <div class="fw-bold">{{ mensaje.remitente.get_full_name|default:mensaje.remitente.username }}</div>
+            <div class="text-body-secondary small">{{ mensaje.remitente.email|default:"" }}</div>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <small class="text-body-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Fecha y Hora:</small>
+            <div class="fw-semibold">{{ mensaje.fecha_envio|date:"d/m/Y H:i" }}</div>
+            <div class="text-body-secondary small">
+              Para: {% if mensaje.destinatario %}{{ mensaje.destinatario.get_full_name|default:mensaje.destinatario.username }}{% else %}<span class="badge bg-info text-dark">Todos / Global</span>{% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-3"><i class="bi bi-chat-left-text me-1"></i> Contenido del Mensaje</h6>
+          <div class="p-4 bg-body rounded border fs-6" style="min-height: 150px; line-height: 1.6;">
+            {{ mensaje.cuerpo|linebreaks }}
+          </div>
+        </div>
+
+        {% if adjuntos %}
+          <div class="mb-4">
+            <h6 class="text-uppercase text-body-secondary fw-bold mb-2"><i class="bi bi-paperclip me-1"></i> Archivos Adjuntos</h6>
+            <div class="list-group">
+              {% for a in adjuntos %}
+                <div class="list-group-item d-flex align-items-center justify-content-between p-3 bg-body-tertiary">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-arrow-down-fill fs-4 text-primary"></i>
+                    <div>
+                      <div class="fw-bold">{{ a.nombre_original }}</div>
+                      <small class="text-body-secondary">Archivo adjunto del mensaje</small>
+                    </div>
+                  </div>
+                  <a href="{{ a.archivo.url }}" target="_blank" class="btn btn-sm btn-primary">
+                    <i class="bi bi-download me-1"></i> Descargar
+                  </a>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        <hr class="my-4">
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'mensajes_inbox' %}" class="btn btn-outline-secondary px-4">Volver a la Bandeja</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

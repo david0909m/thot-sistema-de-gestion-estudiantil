@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} — THOT{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center py-3">
+        <h5 class="fw-bold m-0 text-primary"><i class="bi bi-person-badge me-2"></i> {{ title }}</h5>
+        <a href="{% if is_edit %}{% url 'docente_detail' docente.id %}{% else %}{% url 'docentes_list' %}{% endif %}" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i> Volver
+        </a>
+      </div>
+
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          {% if form.errors %}
+            <div class="alert alert-danger shadow-sm">
+              <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Errores en el formulario:</h6>
+              <ul class="mb-0">
+                {% for field, errors in form.errors.items %}
+                  {% for error in errors %}
+                    <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                  {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-3"><i class="bi bi-person-lock me-1"></i> Cuenta de Acceso y Datos Básicos</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Nombre de Usuario (Login)</label>
+              {{ form.username }}
+              <div class="form-text">Si se deja vacío al crear, se generará a partir del código.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Contraseña</label>
+              {{ form.password }}
+              <div class="form-text">Dejar en blanco para mantener la contraseña existente.</div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Nombres</label>
+              {{ form.first_name }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Apellidos</label>
+              {{ form.last_name }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Correo Electrónico</label>
+              {{ form.email }}
+            </div>
+          </div>
+
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-3"><i class="bi bi-briefcase me-1"></i> Expediente Docente</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Código de Empleado *</label>
+              {{ form.codigo_empleado }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Especialidad / Área Principal</label>
+              {{ form.especialidad }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Teléfono de Contacto</label>
+              {{ form.telefono }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Fotografía</label>
+              {{ form.foto }}
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Dirección Domiciliar</label>
+              {{ form.direccion }}
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% if is_edit %}{% url 'docente_detail' docente.id %}{% else %}{% url 'docentes_list' %}{% endif %}" class="btn btn-outline-secondary px-4">
+              Cancelar
+            </a>
+            <button type="submit" class="btn btn-thot-primary px-4">
+              <i class="bi bi-check-circle me-1"></i> {% if is_edit %}Guardar Cambios{% else %}Registrar Docente{% endif %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

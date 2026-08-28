@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Sábana de Calificaciones — THOT{% endblock %}
+{% block page_title %}Sábana General de Calificaciones{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-body-tertiary d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+    <div>
+      <h5 class="fw-bold m-0 text-primary"><i class="bi bi-grid-3x3-gap-fill me-2"></i> Matriz de Calificaciones por Sección</h5>
+      <small class="text-body-secondary">Período: <strong>{{ periodo.nombre }}</strong></small>
+    </div>
+
+    <!-- Selector de Sección -->
+    <form method="get" class="d-flex align-items-center gap-2">
+      <label class="form-label fw-semibold m-0 small">Sección:</label>
+      <select name="seccion_id" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+        {% for s in secciones %}
+          <option value="{{ s.id }}" {% if seccion_seleccionada.id == s.id %}selected{% endif %}>
+            {{ s.clase.nombre }} - {{ s.nombre }}
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  <div class="card-body p-0">
+    {% if seccion_seleccionada and matriz %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle m-0 text-center">
+          <thead class="table-light">
+            <tr>
+              <th class="text-start" style="min-width: 250px;">Estudiante</th>
+              {% for m in materias %}
+                <th style="min-width: 110px;" title="{{ m.nombre }}">
+                  <div class="small fw-bold text-truncate" style="max-width: 120px;">{{ m.asignatura.codigo }}</div>
+                  <div class="text-body-secondary" style="font-size: 0.7rem;">{{ m.nombre|truncatechars:15 }}</div>
+                </th>
+              {% endfor %}
+              <th style="min-width: 100px;" class="table-primary">Promedio</th>
+              <th style="min-width: 90px;">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for fila in matriz %}
+              <tr>
+                <td class="text-start">
+                  <strong>{{ fila.estudiante.primer_apellido }} {{ fila.estudiante.segundo_apellido|default:"" }}, {{ fila.estudiante.primer_nombre }}</strong>
+                  <div class="text-body-secondary" style="font-size: 0.75rem;"><code>{{ fila.estudiante.codigo_estudiante }}</code></div>
+                </td>
+                {% for n in fila.notas %}
+                  <td>
+                    {% if n is not None %}
+                      <span class="fw-semibold {% if n < 60 %}text-danger{% else %}text-body{% endif %}">
+                        {{ n }}
+                      </span>
+                    {% else %}
+                      <span class="text-body-tertiary">-</span>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+                <td class="table-primary fw-bold {% if fila.promedio < 60 %}text-danger{% else %}text-primary{% endif %}">
+                  {{ fila.promedio }}
+                </td>
+                <td>
+                  {% if fila.aprobado %}
+                    <span class="badge bg-success">APROBADO</span>
+                  {% else %}
+                    <span class="badge bg-danger">REPROBADO</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="p-5 text-center text-body-secondary">
+        <i class="bi bi-folder-x" style="font-size: 2.5rem;"></i>
+        <p class="mt-2 mb-0">Seleccione una sección con alumnos matriculados y materias configuradas para visualizar la sábana.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

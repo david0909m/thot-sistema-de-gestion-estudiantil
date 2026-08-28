@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle de Incidencia — THOT{% endblock %}
+{% block page_title %}Detalle de Incidencia Disciplinaria / Mérito{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center py-3">
+        <h5 class="fw-bold m-0 text-primary">
+          <i class="bi bi-shield-exclamation me-2"></i> Incidencia #{{ incidencia.id }}
+        </h5>
+        <a href="{% url 'incidencias_list' %}" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i> Volver a Incidencias
+        </a>
+      </div>
+
+      <div class="card-body p-4">
+        <div class="row g-3 mb-4 p-3 bg-body-tertiary rounded align-items-center">
+          <div class="col-md-6">
+            <small class="text-body-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Estudiante Afectado:</small>
+            <div class="fw-bold fs-5">
+              <a href="{% url 'estudiante_detail' incidencia.estudiante.id %}" class="text-decoration-none">
+                {{ incidencia.estudiante.get_full_name }}
+              </a>
+            </div>
+            <div class="text-body-secondary small">Carnet: <code>{{ incidencia.estudiante.codigo_estudiante }}</code></div>
+          </div>
+          <div class="col-md-3">
+            <small class="text-body-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Tipo de Suceso:</small>
+            <div>
+              {% if incidencia.tipo_incidencia == 'MERITO' %}
+                <span class="badge bg-success py-2 px-3"><i class="bi bi-award-fill me-1"></i> Mérito / Reconocimiento</span>
+              {% elif incidencia.tipo_incidencia == 'LEVE' %}
+                <span class="badge bg-warning text-dark py-2 px-3">Falta Leve</span>
+              {% elif incidencia.tipo_incidencia == 'GRAVE' %}
+                <span class="badge bg-danger py-2 px-3">Falta Grave</span>
+              {% else %}
+                <span class="badge bg-dark py-2 px-3">Falta Muy Grave</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-3 text-md-end">
+            <small class="text-body-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Fecha de Registro:</small>
+            <div class="fw-semibold">{{ incidencia.fecha|date:"d/m/Y" }}</div>
+            <div class="text-body-secondary small">Por: {{ incidencia.reportado_por.get_full_name|default:incidencia.reportado_por.username }}</div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-2"><i class="bi bi-card-text me-1"></i> Descripción de los Hechos</h6>
+          <div class="p-3 bg-body rounded border">
+            {{ incidencia.descripcion|linebreaks }}
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <h6 class="text-uppercase text-body-secondary fw-bold mb-2"><i class="bi bi-hammer me-1"></i> Sanción / Medida Pedagógica Aplicada</h6>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="actualizar_sancion" value="1">
+            <div class="mb-3">
+              <textarea name="sancion" class="form-control" rows="3" placeholder="Detallar la medida tomada, compromisos o sanciones...">{{ incidencia.sancion|default:'' }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-sm btn-thot-primary">
+              <i class="bi bi-save me-1"></i> Actualizar Sanción
+            </button>
+          </form>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="text-body-secondary small">Período Lectivo: <strong>{{ incidencia.periodo.nombre }}</strong></span>
+          <a href="{% url 'estudiante_detail' incidencia.estudiante.id %}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-person-lines-fill me-1"></i> Ver Expediente del Alumno
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

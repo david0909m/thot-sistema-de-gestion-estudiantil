@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Clases y Estructura Académica — THOT{% endblock %}
+{% block page_title %}Estructura Académica (Clases, Secciones y Materias){% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+      <h5 class="fw-bold m-0"><i class="bi bi-building text-primary me-2"></i> Período Activo: {{ periodo.nombre|default:"Ninguno" }}</h5>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'horarios_list' %}" class="btn btn-sm btn-thot-accent">
+        <i class="bi bi-clock me-1"></i> Horarios
+      </a>
+      <a href="{% url 'seccion_create' %}" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-diagram-2 me-1"></i> Nueva Sección
+      </a>
+      <a href="{% url 'clase_create' %}" class="btn btn-sm btn-thot-primary">
+        <i class="bi bi-plus-circle me-1"></i> Nuevo Grado / Clase
+      </a>
+    </div>
+  </div>
+
+  {% for c in clases %}
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-body-tertiary d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+        <div>
+          <h5 class="fw-bold m-0 text-thot-primary">{{ c.nombre }}</h5>
+          <small class="text-body-secondary">Nivel: {{ c.nivel.nombre }}</small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-secondary">{{ c.secciones.count }} Secciones</span>
+          <span class="badge bg-primary">{{ c.materias.count }} Materias</span>
+          <a href="{% url 'clase_edit' c.id %}" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Editar Grado">
+            <i class="bi bi-pencil"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="card-body p-0">
+        <div class="p-3 bg-body-secondary border-bottom d-flex flex-wrap align-items-center gap-2">
+          <strong class="small text-uppercase tracking-wider me-2">Secciones:</strong>
+          {% for sec in c.secciones.all %}
+            <span class="badge bg-info text-dark py-2 px-3 d-inline-flex align-items-center gap-1">
+              <i class="bi bi-people-fill"></i> {{ sec.nombre }} (Capacidad: {{ sec.capacidad_maxima }})
+              <a href="{% url 'seccion_edit' sec.id %}" class="text-dark ms-1" title="Editar Sección"><i class="bi bi-pencil-square"></i></a>
+            </span>
+          {% empty %}
+            <span class="text-body-secondary small">Sin secciones configuradas</span>
+          {% endfor %}
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle m-0">
+            <thead class="table-light">
+              <tr>
+                <th>Materia / Asignatura</th>
+                <th>Sección Específica</th>
+                <th>Docente Titular</th>
+                <th>Versión Bloqueo</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for mat in c.materias.all %}
+                <tr>
+                  <td><strong>{{ mat.nombre }}</strong> <small class="text-body-secondary">({{ mat.asignatura.codigo }})</small></td>
+                  <td>
+                    {% if mat.seccion %}
+                      <span class="badge bg-primary">{{ mat.seccion.nombre }}</span>
+                    {% else %}
+                      <span class="badge bg-secondary">Todas las secciones</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if mat.docente %}
+                      <i class="bi bi-person-badge me-1 text-success"></i> {{ mat.docente.get_full_name|default:mat.docente.username }}
+                    {% else %}
+                      <span class="text-danger small"><i class="bi bi-exclamation-triangle me-1"></i> Sin Docente</span>
+                    {% endif %}
+                  </td>
+                  <td><code>v{{ mat.lock_version }}</code></td>
+                  <td class="text-end">
+                    <a href="{% url 'materia_detail' mat.id %}" class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-pencil-square me-1"></i> Editar Materia
+                    </a>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="5" class="text-center text-body-secondary py-3">No existen materias en esta clase.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="card border-0 shadow-sm p-4 text-center">
+      <p class="text-body-secondary m-0">No se encontraron clases registradas en el período activo.</p>
+    </div>
+  {% endfor %}
+{% endblock %}

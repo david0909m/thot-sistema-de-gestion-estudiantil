@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Consolidación de Calificaciones — THOT{% endblock %}
+{% block page_title %}Motor de Consolidación de Notas{% endblock %}
+
+{% block content %}
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center py-3">
+      <h5 class="fw-bold m-0"><i class="bi bi-journal-check me-2 text-primary"></i> Consolidación Recursiva Ponderada (Período: {{ periodo.nombre|default:"Ninguno" }})</h5>
+    </div>
+
+    <div class="card-body p-4">
+      <p class="small text-body-secondary mb-4">
+        Ejecuta el recálculo ponderado recursivo con precisión <code>Decimal</code> pura según la jerarquía de tipos de nota configurados.
+      </p>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Materia / Asignatura</th>
+              <th>Grado y Sección</th>
+              <th>Docente</th>
+              <th>Acciones de Consolidación por Tipo de Nota</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for mat in materias %}
+              <tr>
+                <td><strong>{{ mat.nombre }}</strong> <small class="text-body-secondary">({{ mat.asignatura.codigo }})</small></td>
+                <td>{{ mat.clase.nombre }} — {{ mat.seccion.nombre }}</td>
+                <td>{{ mat.docente.get_full_name|default:"Sin Asignar" }}</td>
+                <td>
+                  <div class="d-flex flex-wrap gap-2">
+                    {% for tn in tipos_nota %}
+                      <form method="post" action="{% url 'consolidacion' %}" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="materia_id" value="{{ mat.id }}">
+                        <input type="hidden" name="tipo_nota_id" value="{{ tn.id }}">
+                        
+                        <div class="btn-group btn-group-sm" role="group">
+                          <button type="submit" name="accion" value="consolidar" class="btn btn-thot-primary" title="Consolidar {{ tn.nombre }}">
+                            <i class="bi bi-calculator me-1"></i> {{ tn.nombre }}
+                          </button>
+                          <button type="submit" name="accion" value="reabrir" class="btn btn-outline-warning" title="Reabrir {{ tn.nombre }}">
+                            <i class="bi bi-unlock"></i>
+                          </button>
+                        </div>
+                      </form>
+                    {% empty %}
+                      <span class="text-body-secondary small">Sin tipos de nota</span>
+                    {% endfor %}
+                  </div>
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="4" class="text-center text-body-secondary py-4">No existen materias en el período lectivo actual.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

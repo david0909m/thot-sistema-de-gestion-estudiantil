@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Asignaturas — THOT{% endblock %}
+{% block page_title %}Catálogo General de Asignaturas{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-body-tertiary d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+    <h5 class="fw-bold m-0 text-primary"><i class="bi bi-book me-2"></i> Asignaturas Registradas</h5>
+
+    <form method="get" action="{% url 'asignaturas_list' %}" class="d-flex gap-2 ms-auto">
+      <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="Buscar por código o nombre..." style="width: 250px;">
+      <button type="submit" class="btn btn-sm btn-thot-primary"><i class="bi bi-search"></i> Buscar</button>
+    </form>
+
+    <a href="{% url 'asignatura_create' %}" class="btn btn-success btn-sm">
+      <i class="bi bi-plus-circle me-1"></i> Nueva Asignatura
+    </a>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover table-striped align-middle m-0">
+        <thead class="table-light">
+          <tr>
+            <th>Código</th>
+            <th>Nombre de la Asignatura</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in asignaturas %}
+            <tr>
+              <td><strong><code>{{ a.codigo }}</code></strong></td>
+              <td><strong>{{ a.nombre }}</strong></td>
+              <td>{{ a.descripcion|default:"-" }}</td>
+              <td>
+                {% if a.activo %}
+                  <span class="badge bg-success">ACTIVA</span>
+                {% else %}
+                  <span class="badge bg-secondary">INACTIVA</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <a href="{% url 'asignatura_edit' a.id %}" class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-pencil me-1"></i> Editar
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="text-center text-body-secondary py-4">No se encontraron asignaturas registradas.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

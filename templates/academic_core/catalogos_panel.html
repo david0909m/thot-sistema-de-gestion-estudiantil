@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogos Auxiliares — THOT{% endblock %}
+{% block page_title %}Panel Central de Catálogos Auxiliares{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <!-- Estados Civiles -->
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-body-tertiary py-3">
+        <h6 class="fw-bold m-0 text-primary"><i class="bi bi-heart me-2"></i> Estados Civiles</h6>
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+          {% for ec in estados_civiles %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ ec.nombre }}</span>
+              <code>{{ ec.codigo }}</code>
+            </li>
+          {% empty %}
+            <li class="list-group-item text-body-secondary py-3">Sin registros.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Religiones -->
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-body-tertiary py-3">
+        <h6 class="fw-bold m-0 text-primary"><i class="bi bi-stars me-2"></i> Catálogo de Religiones</h6>
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+          {% for r in religiones %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ r.nombre }}</span>
+              <code>{{ r.codigo }}</code>
+            </li>
+          {% empty %}
+            <li class="list-group-item text-body-secondary py-3">Sin registros.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Escolaridades -->
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-body-tertiary py-3">
+        <h6 class="fw-bold m-0 text-primary"><i class="bi bi-mortarboard me-2"></i> Escolaridades de Origen</h6>
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+          {% for esc in escolaridades %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ esc.nombre }}</span>
+              <code>{{ esc.codigo }}</code>
+            </li>
+          {% empty %}
+            <li class="list-group-item text-body-secondary py-3">Sin registros.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rutas de Transporte / Recorridos -->
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-body-tertiary py-3">
+        <h6 class="fw-bold m-0 text-primary"><i class="bi bi-bus-front me-2"></i> Rutas y Recorridos de Transporte</h6>
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+          {% for rec in recorridos %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ rec.nombre }}</strong>
+                <div class="small text-body-secondary">{{ rec.descripcion|default:"Ruta regular" }}</div>
+              </div>
+              <code>{{ rec.codigo }}</code>
+            </li>
+          {% empty %}
+            <li class="list-group-item text-body-secondary py-3">Sin rutas de transporte configuradas.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

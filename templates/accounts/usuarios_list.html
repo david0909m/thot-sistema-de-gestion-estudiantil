@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Usuarios y Cuentas — THOT{% endblock %}
+{% block page_title %}Directorio de Cuentas y Seguridad{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-body-tertiary d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+    <div>
+      <h5 class="fw-bold m-0 text-primary"><i class="bi bi-person-badge-fill me-2"></i> Cuentas de Usuario del Sistema</h5>
+      <small class="text-body-secondary">Total: <strong>{{ usuarios.count }}</strong> cuentas registradas</small>
+    </div>
+
+    <form method="get" action="{% url 'usuarios_list' %}" class="d-flex gap-2 ms-auto">
+      <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="Buscar por usuario, nombre, email o cédula..." style="width: 300px;">
+      <button type="submit" class="btn btn-sm btn-thot-primary"><i class="bi bi-search"></i> Buscar</button>
+    </form>
+
+    <div class="d-flex gap-2">
+      <a href="{% url 'roles_list' %}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-shield-lock me-1"></i> Matriz de Roles
+      </a>
+      <a href="{% url 'usuario_create' %}" class="btn btn-success btn-sm">
+        <i class="bi bi-person-plus-fill me-1"></i> Nuevo Usuario
+      </a>
+    </div>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover table-striped align-middle m-0">
+        <thead class="table-light">
+          <tr>
+            <th>Usuario / Identificador</th>
+            <th>Nombre Completo</th>
+            <th>Correo Electrónico</th>
+            <th>Perfiles / Roles</th>
+            <th>Seguridad</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in usuarios %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="avatar bg-secondary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px;">
+                    {{ u.username|slice:":2"|upper }}
+                  </div>
+                  <div>
+                    <strong><code>{{ u.username }}</code></strong>
+                    {% if u.is_superuser %}
+                      <span class="badge bg-danger ms-1" style="font-size: 0.65rem;">SUPERADMIN</span>
+                    {% elif u.is_staff %}
+                      <span class="badge bg-primary ms-1" style="font-size: 0.65rem;">STAFF</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </td>
+              <td>{{ u.get_full_name|default:"Sin Nombre" }}</td>
+              <td>{{ u.email|default:"-" }}</td>
+              <td>
+                {% for asig in u.asignaciones.all %}
+                  <span class="badge bg-info text-dark">{{ asig.perfil.nombre }}</span>
+                {% empty %}
+                  <span class="text-body-secondary small">Sin perfil asignado</span>
+                {% endfor %}
+              </td>
+              <td>
+                {% if u.requiere_cambio_password %}
+                  <span class="badge bg-warning text-dark"><i class="bi bi-key-fill me-1"></i> Password Expirada</span>
+                {% else %}
+                  <span class="badge bg-light text-dark border">Vigente</span>
+                {% endif %}
+                {% if u.username in bloqueos_dict %}
+                  <span class="badge bg-danger"><i class="bi bi-lock-fill me-1"></i> Bloqueado Axes</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if u.habilitado and u.is_active %}
+                  <span class="badge bg-success">ACTIVO</span>
+                {% else %}
+                  <span class="badge bg-secondary">INACTIVO</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                {% if u.username in bloqueos_dict %}
+                  <a href="{% url 'usuario_unlock_axes' u.username %}" class="btn btn-sm btn-outline-warning" title="Desbloquear intentos fallidos Axes">
+                    <i class="bi bi-unlock"></i>
+                  </a>
+                {% endif %}
+                <a href="{% url 'usuario_edit' u.id %}" class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-pencil me-1"></i> Editar
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" class="text-center text-body-secondary py-4">No se encontraron usuarios coincidentes.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

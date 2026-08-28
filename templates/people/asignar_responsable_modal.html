@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Asignar Tutor / Familiar — THOT{% endblock %}
+{% block page_title %}Asignar Tutor / Familiar a Estudiante{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center py-3">
+        <h5 class="fw-bold m-0 text-primary"><i class="bi bi-people me-2"></i> Asignar Responsable / Tutor a: {{ estudiante.get_full_name }}</h5>
+        <a href="{% url 'estudiante_detail' estudiante.id %}" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i> Volver al Expediente
+        </a>
+      </div>
+
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+
+          {% if form.errors %}
+            <div class="alert alert-danger shadow-sm">
+              <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Errores en el formulario:</h6>
+              <ul class="mb-0">
+                {% for field, errors in form.errors.items %}
+                  {% for error in errors %}
+                    <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                  {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Seleccionar Familiar / Tutor Registrado *</label>
+            {{ form.pariente }}
+            <div class="form-text">Si el familiar no está en la lista, puede <a href="{% url 'pariente_create' %}" target="_blank">registrar un nuevo familiar aquí</a>.</div>
+          </div>
+
+          <div class="card bg-body-tertiary border-0 p-3 mb-4">
+            <h6 class="fw-bold text-body-secondary mb-3"><i class="bi bi-shield-check me-1"></i> Permisos y Atributos de Responsabilidad</h6>
+            
+            <div class="form-check mb-2">
+              {{ form.es_representante_legal }}
+              <label class="form-check-label fw-semibold ms-2" for="{{ form.es_representante_legal.id_for_label }}">
+                Es Representante Legal (Firma de actas, permisos y trámites oficiales)
+              </label>
+            </div>
+
+            <div class="form-check mb-2">
+              {{ form.es_responsable_financiero }}
+              <label class="form-check-label fw-semibold ms-2" for="{{ form.es_responsable_financiero.id_for_label }}">
+                Es Responsable Financiero (Titular de aranceles y solvencias)
+              </label>
+            </div>
+
+            <div class="form-check">
+              {{ form.convive_con_estudiante }}
+              <label class="form-check-label fw-semibold ms-2" for="{{ form.convive_con_estudiante.id_for_label }}">
+                Convive en el mismo domicilio con el estudiante
+              </label>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'estudiante_detail' estudiante.id %}" class="btn btn-outline-secondary px-4">
+              Cancelar
+            </a>
+            <button type="submit" class="btn btn-thot-primary px-4">
+              <i class="bi bi-link-45deg me-1"></i> Vincular Familiar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
