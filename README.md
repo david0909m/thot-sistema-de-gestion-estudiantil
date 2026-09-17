@@ -1,6 +1,6 @@
 # THOT — Sistema de gestión estudiantil
 
-Reimplementación en Django del sistema escolar SIAC originalmente construido en
+Reimplementación en Django del sistema escolar originalmente construido en
 Ruby on Rails.
 
 La implementación actual es un prototipo funcional amplio, pero la equivalencia
