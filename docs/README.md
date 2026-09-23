@@ -5,9 +5,14 @@ auditorías que ya sólo sirven como antecedentes.
 
 ## Documento vigente
 
-- [`estado_migracion.md`](estado_migracion.md): auditoría verificada al 25 de
-  agosto de 2026. Es la fuente de verdad para decidir el siguiente trabajo de
-  migración.
+- [`estado_migracion.md`](estado_migracion.md): estado conservador verificado al
+  27 de agosto de 2026. Es la fuente de verdad para evaluar el avance actual.
+
+## Plan vigente
+
+- [`plan_correcciones_prioritarias.md`](plan_correcciones_prioritarias.md): orden,
+  criterios de aceptación y pruebas requeridas para cerrar los hallazgos críticos
+  y altos. No representa trabajo ya implementado.
 
 ## Operación local
 
@@ -21,6 +26,8 @@ auditorías que ya sólo sirven como antecedentes.
 
 ## Regla de mantenimiento
 
-Cuando cambie la implementación, se actualiza `estado_migracion.md` con evidencia
-ejecutada. Antes de sustituirlo, la versión anterior se mueve a `historico/` con
-la fecha de su auditoría. No se guardan credenciales reales en Markdown.
+Cuando cambie la implementación, se actualiza `estado_migracion.md` sólo con
+evidencia ejecutada. Antes de sustituirlo, la versión anterior se mueve a
+`historico/` con la fecha de su último corte. Los planes se mantienen
+separados de los avances comprobados y no se guardan credenciales reales en
+Markdown.
